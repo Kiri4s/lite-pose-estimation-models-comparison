@@ -1,0 +1,6 @@
+*.pyc
+__pycache__
+.idea/
+LICENSE
+README.md
+TRAIN-ON-CUSTOM-DATASET.md
