@@ -1,3 +1,4 @@
 *.pyc
 __pycache__
 yolo11n-pose.pt
+coco_val_predictions.json

@@ -3,6 +3,7 @@ import cv2
 import json
 import math
 import numpy as np
+from tqdm import tqdm
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
@@ -90,18 +91,18 @@ def infer(net, img, scales, base_height, stride, pad_value=(0, 0, 0), img_mean=(
         min_dims = [base_height, max(scaled_img.shape[1], base_height)]
         padded_img, pad = pad_width(scaled_img, stride, pad_value, min_dims)
 
-        tensor_img = torch.from_numpy(padded_img).permute(2, 0, 1).unsqueeze(0).float().cuda()
+        tensor_img = torch.from_numpy(padded_img).permute(2, 0, 1).unsqueeze(0).float() #.cuda()
         stages_output = net(tensor_img)
 
         stage2_heatmaps = stages_output[-2]
-        heatmaps = np.transpose(stage2_heatmaps.squeeze().cpu().data.numpy(), (1, 2, 0))
+        heatmaps = np.transpose(stage2_heatmaps.squeeze().data.numpy(), (1, 2, 0)) #.cpu().data.numpy(), (1, 2, 0))
         heatmaps = cv2.resize(heatmaps, (0, 0), fx=stride, fy=stride, interpolation=cv2.INTER_CUBIC)
         heatmaps = heatmaps[pad[0]:heatmaps.shape[0] - pad[2], pad[1]:heatmaps.shape[1] - pad[3]:, :]
         heatmaps = cv2.resize(heatmaps, (width, height), interpolation=cv2.INTER_CUBIC)
         avg_heatmaps = avg_heatmaps + heatmaps / len(scales_ratios)
 
         stage2_pafs = stages_output[-1]
-        pafs = np.transpose(stage2_pafs.squeeze().cpu().data.numpy(), (1, 2, 0))
+        pafs = np.transpose(stage2_pafs.squeeze().data.numpy(), (1, 2, 0)) #.cpu().data.numpy(), (1, 2, 0))
         pafs = cv2.resize(pafs, (0, 0), fx=stride, fy=stride, interpolation=cv2.INTER_CUBIC)
         pafs = pafs[pad[0]:pafs.shape[0] - pad[2], pad[1]:pafs.shape[1] - pad[3], :]
         pafs = cv2.resize(pafs, (width, height), interpolation=cv2.INTER_CUBIC)
@@ -111,7 +112,7 @@ def infer(net, img, scales, base_height, stride, pad_value=(0, 0, 0), img_mean=(
 
 
 def evaluate(labels, output_name, images_folder, net, multiscale=False, visualize=False):
-    net = net.cuda().eval()
+    net = net.eval() #.cuda().eval()
     base_height = 368
     scales = [1]
     if multiscale:
@@ -120,7 +121,7 @@ def evaluate(labels, output_name, images_folder, net, multiscale=False, visualiz
 
     dataset = CocoValDataset(labels, images_folder)
     coco_result = []
-    for sample in dataset:
+    for sample in tqdm(dataset):
         file_name = sample['file_name']
         img = sample['img']
 
@@ -172,7 +173,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     net = PoseEstimationWithMobileNet()
-    checkpoint = torch.load(args.checkpoint_path)
+    checkpoint = torch.load(args.checkpoint_path, torch.device('cpu'))
     load_state(net, checkpoint)
 
     evaluate(args.labels, args.output_name, args.images_folder, net, args.multiscale, args.visualize)
