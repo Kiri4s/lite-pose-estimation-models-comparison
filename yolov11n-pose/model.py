@@ -3,6 +3,8 @@ import cv2
 import fire
 import json
 import os
+import time
+from tqdm import tqdm
 
 def main(test_image_dir="../coco/val2017"):
     model = YOLO("yolo11n-pose.pt")
@@ -12,11 +14,17 @@ def main(test_image_dir="../coco/val2017"):
         image_files = json.load(f)
 
     results = []
-    for img_name in image_files:
+    latency = []
+    for img_name in tqdm(image_files):
         img_path = os.path.join(test_image_dir, img_name)
+
+        start_t = time.time()
         predictions = model(img_path)[0]  # Run inference
+        end_t = time.time()
+        latency.append(end_t-start_t)
 
         # Extract image ID from filename (assuming filenames are like "000000000001.jpg")
+        
         image_id = int(os.path.splitext(img_name)[0])
 
         # Process each detected person
@@ -43,6 +51,9 @@ def main(test_image_dir="../coco/val2017"):
     # Save predictions to JSON
     with open("coco_test_predictions.json", "w") as f:
         json.dump(results, f)
+
+    with open("latency.json", 'w') as f:
+        json.dump(latency, f)
 
 if __name__ == "__main__":
     fire.Fire(main)
