@@ -1,4 +1,6 @@
 .python-version
 .venv
-notebooks
-coco
+cocoapi
+Lite-HRNet
+litepose
+CrowdPose

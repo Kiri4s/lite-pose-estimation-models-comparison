@@ -6,3 +6,5 @@ README.md
 TRAIN-ON-CUSTOM-DATASET.md
 checkpoints
 modified_demo.py
+detections.json
+latency.json
