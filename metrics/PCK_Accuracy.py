@@ -18,11 +18,9 @@ def compute_oks(gt_kp, dt_kp, area):
     oks_per_kp = np.exp(-d2 / var)
     return np.mean(oks_per_kp)
 
-def pck_accuracy_4_every_keypoint(gt, dt):
-    # Get image IDs
+def pck_accuracy_4_every_keypoint(gt, dt, save2file = ''):
     img_ids = gt.getImgIds()
 
-    # Initialize counters for 17 keypoints
     num_kp = 17
     correct_pck = np.zeros(num_kp)
     correct_acc = np.zeros(num_kp)
@@ -33,9 +31,7 @@ def pck_accuracy_4_every_keypoint(gt, dt):
     fixed_threshold = 10  # Accuracy threshold in pixels
     oks_threshold = 0.5  # OKS threshold for matching
 
-    # Process each image
     for img_id in img_ids:
-        # Load ground truth and detection annotations
         gt_ann_ids = gt.getAnnIds(imgIds=img_id)
         gt_anns = gt.loadAnns(gt_ann_ids)
         dt_ann_ids = dt.getAnnIds(imgIds=img_id)
@@ -91,8 +87,15 @@ def pck_accuracy_4_every_keypoint(gt, dt):
         'left_wrist', 'right_wrist', 'left_hip', 'right_hip',
         'left_knee', 'right_knee', 'left_ankle', 'right_ankle'
     ]
+    if save2file != '':
+        with open(save2file, 'w') as f:
+            f.write("PCK@0.1\n")
+            for i, name in enumerate(keypoint_names):
+                f.write(f"{pck[i]:.4f}\n")
+            f.write("\nAccuracy\n")
+            for i, name in enumerate(keypoint_names):
+                f.write(f"{accuracy[i]:.4f}\n")
 
-    # Print results
     print("Keypoint Metrics:")
     print("-----------------")
     for i, name in enumerate(keypoint_names):
@@ -101,7 +104,6 @@ def pck_accuracy_4_every_keypoint(gt, dt):
         print(f"  Accuracy (10px) = {accuracy[i]:.4f}")
 
 if __name__ == "__main__":
-    # Load ground truth and detection data
     gt_file = 'reference_keypoints.json'
     dt_file = 'detected_keypoints.json'
     gt = COCO(gt_file)

@@ -9,3 +9,4 @@
 ### datasets:
 
 - COCO val2017: https://cocodataset.org/#download
+- CrowdPose: https://github.com/jeffffffli/CrowdPose

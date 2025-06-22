@@ -1,6 +1,6 @@
-annotations/**
+annotations/*
 test2017
-val2017/**
+val2017/*
 coco_test_human_images.json
 coco_val_human_images.json
 yolov8n.pt

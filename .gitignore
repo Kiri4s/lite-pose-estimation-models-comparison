@@ -1,6 +1,4 @@
 .python-version
 .venv
-cocoapi
 Lite-HRNet
 litepose
-CrowdPose

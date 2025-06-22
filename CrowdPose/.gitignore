@@ -102,5 +102,15 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-images
-annotations
+
+dataset/images/train/*
+dataset/images/val/*
+dataset/images/test/*
+dataset/labels/train/*
+dataset/labels/val/*
+dataset/labels/annotations_json/*
+
+crowdpose-api/annotations/*
+crowdpose-api/README.md
+test_file_names.json
+README.md

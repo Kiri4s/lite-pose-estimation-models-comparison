@@ -4,3 +4,7 @@ yolo11n-pose.pt
 coco_val_predictions.json
 coco_test_predictions.json
 latency.json
+experiments.ipynb
+results/*
+driveflip.yaml
+weights/*
